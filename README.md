@@ -2,12 +2,27 @@
 
 ## Homework 1
 
+### Names
+Adomas Vaitkus
+
+### Grader Login
+Username: grader
+Password: UCSD135Grader
+
+### Link to site
+https://adomasvcse135.site/
+
 ### Deployment Instructions:
 This site deploys via GitHub to a DigitalOcean server.
 1. Edit files locally
 2. Commit + push to GitHub
 3. SSH into server
 4. Run: `/var/www/adomasvcse135.site/deploy.sh`
+
+
+### Username/password for site:
+Username: grader
+Password: GraderUCSD@W26
 
 ### Changes to HTML file in DevTools after compression
 We enabled Gzip compression using Apache’s mod_deflate module. The DevTools response headers confirm compression is working with Content-Encoding: gzip.
