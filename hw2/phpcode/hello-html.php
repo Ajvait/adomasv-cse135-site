@@ -1,9 +1,5 @@
 <?php
-// hello-html.php
-// CSE 135 HW2 – Hello HTML (PHP)
-
-// Get dynamic data
-$team_name = "Adomas Vaitkus";   // change if you have a team
+$team_name = "Adomas Vaitkus";
 $language  = "PHP";
 $date_time = date("Y-m-d H:i:s");
 $user_ip   = $_SERVER['REMOTE_ADDR'];
