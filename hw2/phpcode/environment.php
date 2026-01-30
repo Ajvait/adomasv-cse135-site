@@ -1,8 +1,4 @@
 <?php
-// environment.php
-// CSE 135 HW2 – Environment Variables (PHP)
-
-// Disable caching (matches Perl reference behavior)
 header("Cache-Control: no-cache, no-store, must-revalidate");
 header("Pragma: no-cache");
 header("Expires: 0");
