@@ -6,8 +6,15 @@ import (
 	"strings"
 	"io/ioutil"
 	"net/url"
-	"github.com/google/uuid"
+	"crypto/rand"
+	"encoding/hex"
 )
+
+func newSessionID() string {
+	b := make([]byte, 16)
+	_, _ = rand.Read(b)
+	return hex.EncodeToString(b)
+}
 
 func main() {
 	cookies := os.Getenv("HTTP_COOKIE")
@@ -21,7 +28,7 @@ func main() {
 	}
 
 	if sessionID == "" {
-		sessionID = uuid.New().String()
+		sessionID = newSessionID()
 	}
 
 	sessionFile := "/tmp/session_" + sessionID + ".txt"
