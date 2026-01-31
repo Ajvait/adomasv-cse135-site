@@ -36,8 +36,8 @@ if os.path.exists(session_file):
     with open(session_file, "r") as f:
         stored_value = f.read()
 
-print("Content-Type: text/html; charset=utf-8\n")
 print(f"Set-Cookie: SESSION_ID={session_id}; Path=/")
+print("Content-Type: text/html; charset=utf-8")
 print()
 
 print(f"""
