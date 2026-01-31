@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"net/http"
 	"os"
@@ -9,7 +10,8 @@ import (
 )
 
 func main() {
-	req, err := http.ReadRequest(os.Stdin)
+	reader := bufio.NewReader(os.Stdin)
+	req, err := http.ReadRequest(reader)
 	if err != nil {
 		fmt.Println("Content-Type: text/plain\n")
 		fmt.Println("Failed to read request")
