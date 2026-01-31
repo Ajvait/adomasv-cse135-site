@@ -8,17 +8,14 @@ import (
 )
 
 func main() {
-	// CGI header
 	fmt.Println("Content-Type: application/json; charset=utf-8")
 	fmt.Println()
 
-	// Get client IP (works behind Apache)
 	ip := os.Getenv("HTTP_X_REAL_IP")
 	if ip == "" {
 		ip = os.Getenv("REMOTE_ADDR")
 	}
 
-	// Build response object
 	response := map[string]string{
 		"name":      "Adomas Vaitkus",
 		"language":  "Go",
@@ -26,7 +23,6 @@ func main() {
 		"ip":        ip,
 	}
 
-	// Encode as JSON
 	encoder := json.NewEncoder(os.Stdout)
 	encoder.SetIndent("", "  ")
 	encoder.Encode(response)

@@ -7,7 +7,6 @@ import (
 )
 
 func main() {
-	// CGI header
 	fmt.Println("Content-Type: text/html; charset=utf-8")
 	fmt.Println()
 
@@ -29,7 +28,6 @@ func main() {
       <th>Value</th>
     </tr>`)
 
-	// Collect and sort environment variables
 	env := os.Environ()
 	sort.Strings(env)
 
@@ -47,7 +45,6 @@ func main() {
 </html>`)
 }
 
-// Find index of '='
 func indexOf(s string, c rune) int {
 	for i, r := range s {
 		if r == c {
@@ -57,7 +54,6 @@ func indexOf(s string, c rune) int {
 	return -1
 }
 
-// Basic HTML escaping
 func htmlEscape(s string) string {
 	replacer := map[rune]string{
 		'<': "&lt;",

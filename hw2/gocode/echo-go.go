@@ -8,7 +8,6 @@ import (
 )
 
 func main() {
-	// CGI header
 	fmt.Println("Content-Type: text/html; charset=utf-8")
 	fmt.Println()
 
@@ -21,12 +20,10 @@ func main() {
 
 	params := make(map[string]string)
 
-	// Parse GET
 	if method == "GET" && query != "" {
 		parseParams(query, params)
 	}
 
-	// Parse POST (x-www-form-urlencoded)
 	if method == "POST" {
 		contentLength := os.Getenv("CONTENT_LENGTH")
 		if contentLength != "" {
@@ -76,7 +73,6 @@ func main() {
 </html>`)
 }
 
-// Helpers
 
 func parseParams(s string, params map[string]string) {
 	pairs := strings.Split(s, "&")
