@@ -1,65 +1,81 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"net/http"
 	"os"
 	"strings"
-	"time"
+	"io/ioutil"
+	"net/url"
+	"github.com/google/uuid"
 )
 
 func main() {
-	reader := bufio.NewReader(os.Stdin)
-	req, err := http.ReadRequest(reader)
-	if err != nil {
-		fmt.Println("Content-Type: text/plain\n")
-		fmt.Println("Failed to read request")
-		return
-	}
-
-	cookie, err := req.Cookie("SESSION_ID")
+	cookies := os.Getenv("HTTP_COOKIE")
 	sessionID := ""
-	if err == nil {
-		sessionID = cookie.Value
-	} else {
-		sessionID = fmt.Sprintf("%d", time.Now().UnixNano())
+
+	for _, c := range strings.Split(cookies, ";") {
+		c = strings.TrimSpace(c)
+		if strings.HasPrefix(c, "SESSION_ID=") {
+			sessionID = strings.TrimPrefix(c, "SESSION_ID=")
+		}
 	}
 
-	sessionFile := "/tmp/session-go-" + sessionID + ".txt"
+	if sessionID == "" {
+		sessionID = uuid.New().String()
+	}
 
-	req.ParseForm()
-	message := req.FormValue("message")
-	clear := req.FormValue("clear")
+	sessionFile := "/tmp/session_" + sessionID + ".txt"
 
-	if clear != "" {
+	method := os.Getenv("REQUEST_METHOD")
+	form := map[string]string{}
+
+	if method == "POST" {
+		length := os.Getenv("CONTENT_LENGTH")
+		if length != "" {
+			body, _ := ioutil.ReadAll(os.Stdin)
+			values, _ := url.ParseQuery(string(body))
+			for k, v := range values {
+				form[k] = v[0]
+			}
+		}
+	} else {
+		values, _ := url.ParseQuery(os.Getenv("QUERY_STRING"))
+		for k, v := range values {
+			form[k] = v[0]
+		}
+	}
+
+	if _, ok := form["clear"]; ok {
 		os.Remove(sessionFile)
 	}
 
-	if message != "" {
-		os.WriteFile(sessionFile, []byte(message), 0644)
+	if msg, ok := form["message"]; ok && msg != "" {
+		_ = ioutil.WriteFile(sessionFile, []byte(msg), 0644)
 	}
 
-	stored := "(nothing stored yet)"
-	if data, err := os.ReadFile(sessionFile); err == nil {
+	stored := ""
+	if data, err := ioutil.ReadFile(sessionFile); err == nil {
 		stored = string(data)
+	}
+
+	if stored == "" {
+		stored = "(nothing stored yet)"
 	}
 
 	fmt.Println("Content-Type: text/html; charset=utf-8")
 	fmt.Printf("Set-Cookie: SESSION_ID=%s; Path=/\n\n", sessionID)
 
-	fmt.Println(`
-<!DOCTYPE html>
+	fmt.Printf(`<!DOCTYPE html>
 <html>
 <head>
-  <title>State Demo — Go</title>
+  <title>State Demo (Go)</title>
 </head>
 <body>
   <h1>State Demo — Go</h1>
 
   <form method="POST">
     <label>Enter a message to save:</label><br>
-    <input type="text" name="message">
+    <input type="text" name="message" />
     <button type="submit">Save</button>
   </form>
 
@@ -69,21 +85,12 @@ func main() {
   </form>
 
   <h2>Stored Value</h2>
-  <p>` + htmlEscape(stored) + `</p>
+  <p>%s</p>
 
   <hr>
-  <p><strong>Session ID:</strong> ` + sessionID + `</p>
+  <p><strong>Session ID:</strong> %s</p>
   <p><strong>Language:</strong> Go</p>
 </body>
-</html>
-`)
-}
-
-func htmlEscape(s string) string {
-	replacer := strings.NewReplacer(
-		"&", "&amp;",
-		"<", "&lt;",
-		">", "&gt;",
-	)
-	return replacer.Replace(s)
+</html>`,
+		stored, sessionID)
 }
