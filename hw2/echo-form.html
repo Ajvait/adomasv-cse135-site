@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Echo Test Form</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    label { display: block; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+<h1>Echo Test Form</h1>
+
+<p>
+This form sends data to different <strong>echo-language</strong> endpoints.
+With JavaScript enabled, you can change language, method, and encoding.
+Without JavaScript, it defaults to GET + PHP.
+</p>
+
+<form id="echoForm" method="GET" action="/cgi-bin/echo-php">
+
+  <label>
+    Language:
+    <select id="language">
+      <option value="php">PHP</option>
+      <option value="python">Python</option>
+      <option value="go">Go</option>
+    </select>
+  </label>
+
+  <label>
+    HTTP Method:
+    <select id="method">
+      <option value="GET">GET</option>
+      <option value="POST">POST</option>
+      <option value="PUT">PUT</option>
+      <option value="DELETE">DELETE</option>
+    </select>
+  </label>
+
+  <label>
+    Encoding:
+    <select id="encoding">
+      <option value="application/x-www-form-urlencoded">
+        x-www-form-urlencoded
+      </option>
+      <option value="application/json">
+        application/json
+      </option>
+    </select>
+  </label>
+
+  <label>
+    Name:
+    <input type="text" name="name" value="Adomas">
+  </label>
+
+  <label>
+    Course:
+    <input type="text" name="course" value="CSE135">
+  </label>
+
+  <br>
+  <button type="submit">Send Request</button>
+
+</form>
+
+<script>
+(function () {
+  const form = document.getElementById("echoForm");
+  const language = document.getElementById("language");
+  const method = document.getElementById("method");
+  const encoding = document.getElementById("encoding");
+
+  form.addEventListener("submit", function (e) {
+    const lang = language.value;
+    const httpMethod = method.value;
+    const contentType = encoding.value;
+
+    // Update endpoint
+    form.action = "/cgi-bin/echo-" + lang;
+
+    // Update method
+    form.method = httpMethod === "GET" ? "GET" : "POST";
+
+    // JSON handling
+    if (contentType === "application/json") {
+      e.preventDefault();
+
+      const data = {
+        name: form.name.value,
+        course: form.course.value
+      };
+
+      fetch(form.action, {
+        method: httpMethod,
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+      .then(res => res.text())
+      .then(text => document.body.innerHTML = text);
+    }
+  });
+})();
+</script>
+
+<noscript>
+  <p><strong>JavaScript is disabled.</strong></p>
+  <p>
+    This form will submit using <strong>GET</strong> to
+    <code>/cgi-bin/echo-php</code>.
+  </p>
+</noscript>
+
+</body>
+</html>
