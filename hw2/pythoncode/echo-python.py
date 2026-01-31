@@ -15,6 +15,7 @@ host = os.environ.get("HTTP_HOST", "")
 user_agent = os.environ.get("HTTP_USER_AGENT", "")
 ip_address = os.environ.get("REMOTE_ADDR", "")
 datetime_now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
 data = {}
 
 form = cgi.FieldStorage()
