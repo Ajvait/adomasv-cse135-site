@@ -4,8 +4,17 @@
   <meta charset="UTF-8">
   <title>Echo Test Form</title>
   <style>
-    body { font-family: Arial, sans-serif; }
-    label { display: block; margin-top: 10px; }
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    select, input {
+      margin-top: 4px;
+    }
   </style>
 </head>
 <body>
@@ -13,12 +22,23 @@
 <h1>Echo Test Form</h1>
 
 <p>
-This form sends data to different <strong>echo-language</strong> endpoints.
-With JavaScript enabled, you can change language, method, and encoding.
-Without JavaScript, it defaults to GET + PHP.
+This form sends requests to the <strong>echo</strong> programs written in
+<strong>PHP, Python, and Go</strong>.
 </p>
 
-<form id="echoForm" method="GET" action="/cgi-bin/echo-php">
+<p>
+<strong>Without JavaScript:</strong>  
+The form submits using <code>GET</code> to the PHP echo program.
+</p>
+
+<p>
+<strong>With JavaScript enabled:</strong>  
+You may select the language, HTTP method, and encoding.
+</p>
+
+<hr>
+
+<form id="echoForm" method="GET" action="/hw2/phpcode/echo-php.php">
 
   <label>
     Language:
@@ -43,7 +63,7 @@ Without JavaScript, it defaults to GET + PHP.
     Encoding:
     <select id="encoding">
       <option value="application/x-www-form-urlencoded">
-        x-www-form-urlencoded
+        application/x-www-form-urlencoded
       </option>
       <option value="application/json">
         application/json
@@ -66,6 +86,14 @@ Without JavaScript, it defaults to GET + PHP.
 
 </form>
 
+<noscript>
+  <p><strong>JavaScript is disabled.</strong></p>
+  <p>
+    This form will submit using <code>GET</code> to
+    <code>/hw2/phpcode/echo-php.php</code>.
+  </p>
+</noscript>
+
 <script>
 (function () {
   const form = document.getElementById("echoForm");
@@ -78,42 +106,45 @@ Without JavaScript, it defaults to GET + PHP.
     const httpMethod = method.value;
     const contentType = encoding.value;
 
-    // Update endpoint
-    form.action = "/cgi-bin/echo-" + lang;
-
-    // Update method
-    form.method = httpMethod === "GET" ? "GET" : "POST";
-
-    // JSON handling
-    if (contentType === "application/json") {
-      e.preventDefault();
-
-      const data = {
-        name: form.name.value,
-        course: form.course.value
-      };
-
-      fetch(form.action, {
-        method: httpMethod,
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      })
-      .then(res => res.text())
-      .then(text => document.body.innerHTML = text);
+    if (lang === "php") {
+      form.action = "/hw2/phpcode/echo-php.php";
+    } else if (lang === "python") {
+      form.action = "/cgi-bin/echo-python";
+    } else if (lang === "go") {
+      form.action = "/cgi-bin/echo-go";
     }
+
+    if (httpMethod === "GET" && contentType !== "application/json") {
+      form.method = "GET";
+      return;
+    }
+
+    e.preventDefault();
+
+    const data = {
+      name: form.name.value,
+      course: form.course.value
+    };
+
+    fetch(form.action, {
+      method: httpMethod,
+      headers: {
+        "Content-Type": contentType
+      },
+      body: contentType === "application/json"
+        ? JSON.stringify(data)
+        : new URLSearchParams(data)
+    })
+    .then(res => res.text())
+    .then(text => {
+      document.body.innerHTML = text;
+    })
+    .catch(err => {
+      document.body.innerHTML = "<pre>Error: " + err + "</pre>";
+    });
   });
 })();
 </script>
-
-<noscript>
-  <p><strong>JavaScript is disabled.</strong></p>
-  <p>
-    This form will submit using <strong>GET</strong> to
-    <code>/cgi-bin/echo-php</code>.
-  </p>
-</noscript>
 
 </body>
 </html>
