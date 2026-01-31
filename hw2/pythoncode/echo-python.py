@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
 import os
-import sys
 import json
 import datetime
-from urllib.parse import parse_qs
+import cgi
 
 print("Cache-Control: no-cache, no-store, must-revalidate")
 print("Pragma: no-cache")
@@ -15,26 +14,13 @@ method = os.environ.get("REQUEST_METHOD", "")
 host = os.environ.get("HTTP_HOST", "")
 user_agent = os.environ.get("HTTP_USER_AGENT", "")
 ip_address = os.environ.get("REMOTE_ADDR", "")
-content_type = os.environ.get("CONTENT_TYPE", "")
-query_string = os.environ.get("QUERY_STRING", "")
 datetime_now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 data = {}
 
-if method == "GET":
-    data = parse_qs(query_string)
-
-elif method in ("POST", "PUT", "DELETE"):
-    content_length = int(os.environ.get("CONTENT_LENGTH", 0))
-    raw_body = sys.stdin.read(content_length)
-
-    if "application/json" in content_type:
-        try:
-            data = json.loads(raw_body)
-        except json.JSONDecodeError:
-            data = {}
-    else:
-        data = parse_qs(raw_body)
+form = cgi.FieldStorage()
+for key in form.keys():
+    data[key] = form.getvalue(key)
 
 print(f"""<!DOCTYPE html>
 <html lang="en">
