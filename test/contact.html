@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contact Us</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script defer src="js/main.js"></script>
+</head>
+<body>
+
+<header>
+    <h1>Contact BrokenByte</h1>
+    <a href="index.html">Home</a>
+</header>
+
+<form onsubmit="submitForm(event)">
+    <label>Name:</label>
+    <input type="text" id="name" required>
+
+    <label>Email:</label>
+    <input type="email" id="email" required>
+
+    <label>Message:</label>
+    <textarea id="message"></textarea>
+
+    <button type="submit">Send</button>
+</form>
+
+<p id="formResponse"></p>
+
+</body>
+</html>
