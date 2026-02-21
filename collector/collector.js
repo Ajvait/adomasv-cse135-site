@@ -65,7 +65,7 @@
     };
 
     const blob = new Blob([JSON.stringify(payload)], {
-      type: 'application/json'
+      type: 'text/plain'
     });
 
     if (navigator.sendBeacon) {
