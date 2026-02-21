@@ -5,30 +5,27 @@
   const endpoint = '/collect.php';
 
   function sendBeacon() {
-    const payload = {
-      url: window.location.href,
-      title: document.title,
-      referrer: document.referrer,
-      timestamp: new Date().toISOString(),
-      type: 'pageview'
-    };
+  const payload = {
+    url: window.location.href,
+    title: document.title,
+    referrer: document.referrer,
+    timestamp: new Date().toISOString(),
+    type: 'pageview'
+  };
 
-    const blob = new Blob(
-      [JSON.stringify(payload)],
-      { type: 'application/json' }
-    );
+  const body = JSON.stringify(payload);
 
-    if (navigator.sendBeacon) {
-      navigator.sendBeacon(endpoint, blob);
-    } else {
-      // Fallback for older browsers
-      fetch(endpoint, {
-        method: 'POST',
-        body: blob,
-        keepalive: true
-      });
-    }
+  if (navigator.sendBeacon) {
+    navigator.sendBeacon(endpoint, body);
+  } else {
+    fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body,
+      keepalive: true
+    });
   }
+}
 
   // Fire on page load
   if (document.readyState === 'complete') {
