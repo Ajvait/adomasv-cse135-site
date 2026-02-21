@@ -24,11 +24,46 @@
     };
   }
 
-  function getTechnographics() {
+  function isJavaScriptEnabled() {
+    return true;
+  }
+
+  function isCSSEnabled() {
+    const div = document.createElement('div');
+    div.style.display = 'none';
+    document.body.appendChild(div);
+
+    const cssEnabled =
+      window.getComputedStyle(div).display === 'none';
+
+    document.body.removeChild(div);
+
+    return cssEnabled;
+  }
+
+  function checkImagesEnabled(callback) {
+    const img = new Image();
+
+    img.onload = function () {
+      callback(true);
+    };
+
+    img.onerror = function () {
+      callback(false);
+    };
+
+    img.src =
+      "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+  }
+
+  function getTechnographics(imagesEnabled = true) {
     return {
       userAgent: navigator.userAgent,
       language: navigator.language,
       cookiesEnabled: navigator.cookieEnabled,
+      javascriptEnabled: isJavaScriptEnabled(),
+      imagesEnabled: imagesEnabled,
+      cssEnabled: isCSSEnabled(),
       viewportWidth: window.innerWidth,
       viewportHeight: window.innerHeight,
       screenWidth: window.screen.width,
@@ -80,12 +115,14 @@
   }
 
   function sendPageview() {
-    sendEvent({
-      type: 'pageview',
-      title: document.title,
-      referrer: document.referrer,
-      technographics: getTechnographics(),
-      performance: getPerformanceData()
+    checkImagesEnabled(function (imagesEnabled) {
+      sendEvent({
+        type: 'pageview',
+        title: document.title,
+        referrer: document.referrer,
+        technographics: getTechnographics(imagesEnabled),
+        performance: getPerformanceData()
+      });
     });
   }
 
