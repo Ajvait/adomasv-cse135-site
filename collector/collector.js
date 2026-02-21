@@ -2,7 +2,7 @@
 (function() {
   'use strict';
 
-  const endpoint = '/collect.php';
+  const endpoint = 'https://collector.adomasvcse135.site/collect.php';
 
   function sendBeacon() {
   const payload = {
