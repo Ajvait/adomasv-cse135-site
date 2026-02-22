@@ -22,23 +22,21 @@ if (!$data) {
     exit("Invalid JSON");
 }
 
-$session   = $data['session'] ?? '';
-$type      = $data['type'] ?? '';
-$url       = $data['url'] ?? '';
-$timestamp = $data['timestamp'] ?? '';
+$session = $data['session'] ?? '';
+$type    = $data['type'] ?? '';
+$url     = $data['url'] ?? '';
 
 $payloadJson = json_encode($data);
 
 $stmt = $conn->prepare(
-    "INSERT INTO events (session, type, url, timestamp, payload)
-     VALUES (?, ?, ?, ?, ?)"
+    "INSERT INTO events (session_id, event_type, url, payload)
+     VALUES (?, ?, ?, ?)"
 );
 
-$stmt->bind_param("sssss",
+$stmt->bind_param("ssss",
     $session,
     $type,
     $url,
-    $timestamp,
     $payloadJson
 );
 
