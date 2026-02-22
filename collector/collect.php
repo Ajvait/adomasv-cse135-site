@@ -1,13 +1,7 @@
 <?php
 
-header("Access-Control-Allow-Origin: https://test.adomasvcse135.site");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(204);
-    exit();
-}
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 $host = "localhost";
 $user = "analytics";
@@ -17,33 +11,42 @@ $db   = "cse135_analytics";
 $conn = new mysqli($host, $user, $pass, $db);
 
 if ($conn->connect_error) {
-    http_response_code(500);
-    die("DB connection failed");
+    die("DB connection failed: " . $conn->connect_error);
 }
 
 $raw = file_get_contents("php://input");
 $data = json_decode($raw, true);
 
-if ($data) {
-    $stmt = $conn->prepare(
-        "INSERT INTO events (session, type, url, timestamp, payload)
-         VALUES (?, ?, ?, ?, ?)"
-    );
-
-    $payloadJson = json_encode($data);
-
-    $stmt->bind_param(
-        "sssss",
-        $data['session'],
-        $data['type'],
-        $data['url'],
-        $data['timestamp'],
-        $payloadJson
-    );
-
-    $stmt->execute();
-    $stmt->close();
+if (!$data) {
+    http_response_code(400);
+    exit("Invalid JSON");
 }
 
+$session   = $data['session'] ?? '';
+$type      = $data['type'] ?? '';
+$url       = $data['url'] ?? '';
+$timestamp = $data['timestamp'] ?? '';
+
+$payloadJson = json_encode($data);
+
+$stmt = $conn->prepare(
+    "INSERT INTO events (session, type, url, timestamp, payload)
+     VALUES (?, ?, ?, ?, ?)"
+);
+
+$stmt->bind_param("sssss",
+    $session,
+    $type,
+    $url,
+    $timestamp,
+    $payloadJson
+);
+
+if (!$stmt->execute()) {
+    die("Insert failed: " . $stmt->error);
+}
+
+$stmt->close();
 $conn->close();
+
 http_response_code(204);
