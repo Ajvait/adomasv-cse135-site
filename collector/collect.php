@@ -40,8 +40,6 @@ $stmt->bind_param("ssss",
     $payloadJson
 );
 
-file_put_contents(__DIR__ . "/debug.log", $payloadJson . PHP_EOL, FILE_APPEND);
-
 if (!$stmt->execute()) {
     die("Insert failed: " . $stmt->error);
 }
