@@ -55,3 +55,8 @@ Password: UCSD135Grader
 
 #### IP Address:
 104.248.78.132
+
+## Homework 3
+Only additional piece of information is,
+SQL user: analytics
+SQL password: CSE135pass!
