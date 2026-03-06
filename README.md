@@ -60,3 +60,50 @@ Password: UCSD135Grader
 Only additional piece of information is,
 SQL user: analytics
 SQL password: CSE135pass!
+
+## Homework 4
+#### Analytics Dashboard URL:
+http://adomasvcse135.site/analytics/login.php
+
+#### Login Credentials:
+Username: adomasv
+Password: AjvUCSD@W26
+
+
+#### Requirement 1 – MVC Web Application with Authentication
+
+An analytics dashboard backend was implemented using PHP and MySQL.  
+A login system was created using PHP sessions. The login page verifies the username and password and creates a session variable.
+
+Protected pages include:
+- /analytics/dashboard.php
+- /analytics/reports.php
+- /analytics/charts.php
+
+These pages include an auth.php file that checks if a user session exists. If a user attempts to access these pages without logging in, they are redirected to login.php. This prevents forceful browsing as required in the assignment.
+
+
+#### Requirement 2 – Connecting the Datastore to a Data Table
+
+A table view was implemented in reports.php which retrieves analytics data stored in the MySQL database created in HW3.
+
+The table queries the events table in the cse135_analytics database and displays recent events including:
+
+- id
+- session_id
+- event_type
+- url
+- created_at
+
+This data is generated from the analytics collector script created in HW3.
+
+
+#### Requirement 3 – Connecting the Datastore to a Chart
+
+A chart page was implemented in charts.php using ChartJS.
+
+The chart visualizes event distribution by event type using the query:
+
+SELECT event_type, COUNT(*) FROM events GROUP BY event_type;
+
+The results are displayed as a pie chart showing user interaction activity collected from the analytics collector script.
