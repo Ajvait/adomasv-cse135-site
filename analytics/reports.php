@@ -3,22 +3,9 @@
 require_once "auth.php";
 require_once "db.php";
 
-requireLogin();
-
-/* Save Analyst Comment */
-
-if(isset($_POST['comment'])){
-
-$comment = $_POST['comment'];
-
-$sql = "INSERT INTO comments (report,comment)
-VALUES('traffic','$comment')";
-
-$conn->query($sql);
-
-}
-
-/* TRAFFIC DATA */
+/* -----------------------------
+   TRAFFIC DATA (events per day)
+------------------------------*/
 
 $traffic_labels = [];
 $traffic_data = [];
@@ -33,34 +20,36 @@ ORDER BY day
 $result = $conn->query($sql);
 
 while($row = $result->fetch_assoc()){
-
-$traffic_labels[] = $row['day'];
-$traffic_data[] = $row['total'];
-
+    $traffic_labels[] = $row['day'];
+    $traffic_data[] = $row['total'];
 }
 
-/* PAGE POPULARITY */
+
+/* -----------------------------
+   PAGE POPULARITY (by URL)
+------------------------------*/
 
 $page_labels = [];
 $page_data = [];
 
 $sql = "
-SELECT page, COUNT(*) as views
+SELECT url, COUNT(*) as views
 FROM events
-GROUP BY page
+GROUP BY url
 ORDER BY views DESC
 ";
 
 $result = $conn->query($sql);
 
 while($row = $result->fetch_assoc()){
-
-$page_labels[] = $row['page'];
-$page_data[] = $row['views'];
-
+    $page_labels[] = $row['url'];
+    $page_data[] = $row['views'];
 }
 
-/* EVENT TYPES */
+
+/* -----------------------------
+   EVENT TYPE REPORT
+------------------------------*/
 
 $event_labels = [];
 $event_data = [];
@@ -74,26 +63,34 @@ GROUP BY event_type
 $result = $conn->query($sql);
 
 while($row = $result->fetch_assoc()){
-
-$event_labels[] = $row['event_type'];
-$event_data[] = $row['total'];
-
+    $event_labels[] = $row['event_type'];
+    $event_data[] = $row['total'];
 }
 
 ?>
 
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Analytics Reports</title>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<h1>Analytics Reports</h1>
+</head>
 
-<p>Logged in as: <?php echo $_SESSION['user']; ?></p>
+<body>
+
+<h1>Analytics Reports</h1>
 
 <a href="dashboard.php">Dashboard</a> |
 <a href="logout.php">Logout</a>
 
 <hr>
 
-<!-- TRAFFIC REPORT -->
+<!-- =========================
+     TRAFFIC REPORT
+========================= -->
 
 <h2>Traffic Report</h2>
 
@@ -106,10 +103,10 @@ new Chart(document.getElementById("trafficChart"),{
 type:'line',
 
 data:{
-labels:<?php echo json_encode($traffic_labels); ?>,
+labels: <?php echo json_encode($traffic_labels); ?>,
 datasets:[{
-label:"Visitors Per Day",
-data:<?php echo json_encode($traffic_data); ?>,
+label:"Events Per Day",
+data: <?php echo json_encode($traffic_data); ?>,
 borderWidth:2
 }]
 }
@@ -122,7 +119,7 @@ borderWidth:2
 
 <tr>
 <th>Date</th>
-<th>Visitors</th>
+<th>Events</th>
 </tr>
 
 <?php
@@ -131,6 +128,7 @@ $sql = "
 SELECT DATE(created_at) as day, COUNT(*) as total
 FROM events
 GROUP BY DATE(created_at)
+ORDER BY day
 ";
 
 $result = $conn->query($sql);
@@ -148,9 +146,12 @@ echo "</tr>";
 
 </table>
 
+
 <hr>
 
-<!-- PAGE POPULARITY -->
+<!-- =========================
+     PAGE POPULARITY REPORT
+========================= -->
 
 <h2>Page Popularity Report</h2>
 
@@ -163,10 +164,10 @@ new Chart(document.getElementById("pageChart"),{
 type:'bar',
 
 data:{
-labels:<?php echo json_encode($page_labels); ?>,
+labels: <?php echo json_encode($page_labels); ?>,
 datasets:[{
-label:"Page Views",
-data:<?php echo json_encode($page_data); ?>
+label:"Events Per Page",
+data: <?php echo json_encode($page_data); ?>
 }]
 }
 
@@ -177,16 +178,16 @@ data:<?php echo json_encode($page_data); ?>
 <table border="1">
 
 <tr>
-<th>Page</th>
-<th>Views</th>
+<th>URL</th>
+<th>Events</th>
 </tr>
 
 <?php
 
 $sql = "
-SELECT page, COUNT(*) as views
+SELECT url, COUNT(*) as views
 FROM events
-GROUP BY page
+GROUP BY url
 ORDER BY views DESC
 ";
 
@@ -195,7 +196,7 @@ $result = $conn->query($sql);
 while($row = $result->fetch_assoc()){
 
 echo "<tr>";
-echo "<td>".$row['page']."</td>";
+echo "<td>".$row['url']."</td>";
 echo "<td>".$row['views']."</td>";
 echo "</tr>";
 
@@ -205,9 +206,12 @@ echo "</tr>";
 
 </table>
 
+
 <hr>
 
-<!-- EVENT TYPE REPORT -->
+<!-- =========================
+     EVENT TYPE REPORT
+========================= -->
 
 <h2>Event Type Report</h2>
 
@@ -220,9 +224,9 @@ new Chart(document.getElementById("eventChart"),{
 type:'pie',
 
 data:{
-labels:<?php echo json_encode($event_labels); ?>,
+labels: <?php echo json_encode($event_labels); ?>,
 datasets:[{
-data:<?php echo json_encode($event_data); ?>
+data: <?php echo json_encode($event_data); ?>
 }]
 }
 
@@ -230,28 +234,36 @@ data:<?php echo json_encode($event_data); ?>
 
 </script>
 
-<hr>
+<table border="1">
 
-<h3>Analyst Comments</h3>
-
-<form method="POST">
-
-<textarea name="comment" rows="4" cols="60"></textarea><br><br>
-
-<button type="submit">Save Comment</button>
-
-</form>
-
-<br>
+<tr>
+<th>Event Type</th>
+<th>Total</th>
+</tr>
 
 <?php
 
-$result = $conn->query("SELECT * FROM comments ORDER BY created_at DESC");
+$sql = "
+SELECT event_type, COUNT(*) as total
+FROM events
+GROUP BY event_type
+";
+
+$result = $conn->query($sql);
 
 while($row = $result->fetch_assoc()){
 
-echo "<p>".$row['comment']."</p>";
+echo "<tr>";
+echo "<td>".$row['event_type']."</td>";
+echo "<td>".$row['total']."</td>";
+echo "</tr>";
 
 }
 
 ?>
+
+</table>
+
+
+</body>
+</html>
