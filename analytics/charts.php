@@ -1,5 +1,6 @@
 <?php
 require "auth.php";
+requireRole(["super_admin","analyst"]);
 require "db.php";
 
 $query = "
