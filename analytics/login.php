@@ -1,54 +1,55 @@
 <?php
-
 session_start();
-require_once "db.php";
 
-if($_SERVER["REQUEST_METHOD"] == "POST"){
+$error = "";
 
-$username = $_POST['username'];
-$password = $_POST['password'];
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-$sql = "SELECT * FROM users WHERE username='$username' AND password='$password'";
+    $username = $_POST["username"];
+    $password = $_POST["password"];
 
-$result = $conn->query($sql);
+    // Your login credentials
+    $validUser = "adomasv";
+    $validPass = "AjvUCSD@W26";
 
-if($result->num_rows == 1){
+    if ($username === $validUser && $password === $validPass) {
 
-$row = $result->fetch_assoc();
+        $_SESSION["user"] = $username;
 
-$_SESSION['user'] = $row['username'];
-$_SESSION['role'] = $row['role'];
+        header("Location: dashboard.php");
+        exit();
 
-header("Location: dashboard.php");
-exit();
-
+    } else {
+        $error = "Invalid username or password.";
+    }
 }
-else{
-
-$error = "Invalid login";
-
-}
-
-}
-
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analytics Login</title>
+</head>
+
+<body>
 
 <h2>Analytics Login</h2>
 
 <form method="POST">
 
-Username:<br>
-<input type="text" name="username"><br><br>
+<label>Username</label><br>
+<input type="text" name="username" required><br><br>
 
-Password:<br>
-<input type="password" name="password"><br><br>
+<label>Password</label><br>
+<input type="password" name="password" required><br><br>
 
 <button type="submit">Login</button>
 
 </form>
 
-<?php
-if(isset($error)){
-echo $error;
-}
-?>
+<p style="color:red;">
+<?php echo htmlspecialchars($error); ?>
+</p>
+
+</body>
+</html>
