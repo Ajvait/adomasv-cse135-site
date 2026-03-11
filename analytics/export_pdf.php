@@ -2,6 +2,7 @@
 
 require "auth.php";
 require "db.php";
+
 require __DIR__ . "/vendor/autoload.php";
 
 use Dompdf\Dompdf;
