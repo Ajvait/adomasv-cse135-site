@@ -12,6 +12,14 @@ LIMIT 50
 $result = $conn->query($query);
 ?>
 
+<h1>Analytics Reports</h1>
+
+<a href="export_pdf.php">
+<button>Export Report to PDF</button>
+</a>
+
+<br><br>
+
 <h2>Recent Analytics Events</h2>
 
 <table border="1" cellpadding="5">
