@@ -1,51 +1,57 @@
 <?php
-require "auth.php";
-require "db.php";
 
-$query = "
-SELECT event_type, COUNT(*) AS total
-FROM events
-GROUP BY event_type
-ORDER BY total DESC
-";
+require_once "auth.php";
+require_once "db.php";
 
-$result = $conn->query($query);
+requireLogin();
 
 $labels = [];
 $data = [];
 
-while ($row = $result->fetch_assoc()) {
-    $labels[] = $row["event_type"];
-    $data[] = $row["total"];
+$sql = "
+SELECT DATE(created_at) as day, COUNT(*) as total
+FROM events
+GROUP BY DATE(created_at)
+ORDER BY day
+";
+
+$result = $conn->query($sql);
+
+while($row = $result->fetch_assoc()){
+
+$labels[] = $row['day'];
+$data[] = $row['total'];
+
 }
+
 ?>
-
-<h2>Event Type Distribution</h2>
-
-<canvas id="eventChart" width="400" height="200"></canvas>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<h2>Traffic Chart</h2>
+
+<canvas id="trafficChart"></canvas>
+
 <script>
 
-const ctx = document.getElementById('eventChart');
+const labels = <?php echo json_encode($labels); ?>;
+const data = <?php echo json_encode($data); ?>;
 
-new Chart(ctx, {
+const ctx = document.getElementById('trafficChart');
 
-    type: 'pie',
+new Chart(ctx,{
 
-    data: {
-        labels: <?php echo json_encode($labels); ?>,
-        datasets: [{
-            label: 'Event Count',
-            data: <?php echo json_encode($data); ?>
-        }]
-    }
+type:'line',
+
+data:{
+labels:labels,
+datasets:[{
+label:'Visitors per Day',
+data:data,
+borderWidth:2
+}]
+}
 
 });
 
 </script>
-
-<br>
-
-<a href="dashboard.php">Back to Dashboard</a>

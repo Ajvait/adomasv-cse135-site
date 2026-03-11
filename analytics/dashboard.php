@@ -1,13 +1,19 @@
 <?php
-require "auth.php";
+
+require_once "auth.php";
+
+requireLogin();
+
 ?>
 
 <h1>Analytics Dashboard</h1>
 
-<p>Welcome to the analytics dashboard.</p>
+<p>Welcome <?php echo $_SESSION['user']; ?></p>
 
-<ul>
-    <li><a href="reports.php">View Raw Event Table</a></li>
-    <li><a href="charts.php">View Analytics Charts</a></li>
-    <li><a href="logout.php">Logout</a></li>
-</ul>
+<hr>
+
+<a href="reports.php">View Reports</a><br><br>
+
+<a href="charts.php">View Charts</a><br><br>
+
+<a href="logout.php">Logout</a>
