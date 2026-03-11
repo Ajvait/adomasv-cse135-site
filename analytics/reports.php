@@ -1,11 +1,24 @@
 <?php
+require "auth.php";
+require "db.php";
 
-require_once "auth.php";
-require_once "db.php";
+/* ---------------------------
+   RAW EVENT TABLE (original)
+----------------------------*/
 
-/* -----------------------------
-   TRAFFIC DATA (events per day)
-------------------------------*/
+$query = "
+SELECT id, session_id, event_type, url, created_at
+FROM events
+ORDER BY created_at DESC
+LIMIT 50
+";
+
+$result = $conn->query($query);
+
+
+/* ---------------------------
+   TRAFFIC DATA (per day)
+----------------------------*/
 
 $traffic_labels = [];
 $traffic_data = [];
@@ -17,17 +30,17 @@ GROUP BY DATE(created_at)
 ORDER BY day
 ";
 
-$result = $conn->query($sql);
+$resultTraffic = $conn->query($sql);
 
-while($row = $result->fetch_assoc()){
-    $traffic_labels[] = $row['day'];
-    $traffic_data[] = $row['total'];
+while ($row = $resultTraffic->fetch_assoc()) {
+    $traffic_labels[] = $row["day"];
+    $traffic_data[] = $row["total"];
 }
 
 
-/* -----------------------------
-   PAGE POPULARITY (by URL)
-------------------------------*/
+/* ---------------------------
+   PAGE POPULARITY
+----------------------------*/
 
 $page_labels = [];
 $page_data = [];
@@ -39,17 +52,17 @@ GROUP BY url
 ORDER BY views DESC
 ";
 
-$result = $conn->query($sql);
+$resultPages = $conn->query($sql);
 
-while($row = $result->fetch_assoc()){
-    $page_labels[] = $row['url'];
-    $page_data[] = $row['views'];
+while ($row = $resultPages->fetch_assoc()) {
+    $page_labels[] = $row["url"];
+    $page_data[] = $row["views"];
 }
 
 
-/* -----------------------------
-   EVENT TYPE REPORT
-------------------------------*/
+/* ---------------------------
+   EVENT TYPES
+----------------------------*/
 
 $event_labels = [];
 $event_data = [];
@@ -58,21 +71,22 @@ $sql = "
 SELECT event_type, COUNT(*) as total
 FROM events
 GROUP BY event_type
+ORDER BY total DESC
 ";
 
-$result = $conn->query($sql);
+$resultEvents = $conn->query($sql);
 
-while($row = $result->fetch_assoc()){
-    $event_labels[] = $row['event_type'];
-    $event_data[] = $row['total'];
+while ($row = $resultEvents->fetch_assoc()) {
+    $event_labels[] = $row["event_type"];
+    $event_data[] = $row["total"];
 }
 
 ?>
 
 <!DOCTYPE html>
 <html>
-<head>
 
+<head>
 <title>Analytics Reports</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -88,26 +102,50 @@ while($row = $result->fetch_assoc()){
 
 <hr>
 
-<!-- =========================
-     TRAFFIC REPORT
-========================= -->
+<h2>Recent Analytics Events</h2>
+
+<table border="1" cellpadding="5">
+
+<tr>
+<th>ID</th>
+<th>Session</th>
+<th>Event Type</th>
+<th>URL</th>
+<th>Timestamp</th>
+</tr>
+
+<?php while ($row = $result->fetch_assoc()) { ?>
+
+<tr>
+<td><?php echo $row["id"]; ?></td>
+<td><?php echo $row["session_id"]; ?></td>
+<td><?php echo $row["event_type"]; ?></td>
+<td><?php echo $row["url"]; ?></td>
+<td><?php echo $row["created_at"]; ?></td>
+</tr>
+
+<?php } ?>
+
+</table>
+
+<hr>
 
 <h2>Traffic Report</h2>
 
-<canvas id="trafficChart"></canvas>
+<canvas id="trafficChart" width="400" height="200"></canvas>
 
 <script>
 
-new Chart(document.getElementById("trafficChart"),{
+new Chart(document.getElementById('trafficChart'), {
 
-type:'line',
+type: 'line',
 
-data:{
+data: {
 labels: <?php echo json_encode($traffic_labels); ?>,
-datasets:[{
-label:"Events Per Day",
+datasets: [{
+label: 'Events Per Day',
 data: <?php echo json_encode($traffic_data); ?>,
-borderWidth:2
+borderWidth: 2
 }]
 }
 
@@ -115,58 +153,22 @@ borderWidth:2
 
 </script>
 
-<table border="1">
-
-<tr>
-<th>Date</th>
-<th>Events</th>
-</tr>
-
-<?php
-
-$sql = "
-SELECT DATE(created_at) as day, COUNT(*) as total
-FROM events
-GROUP BY DATE(created_at)
-ORDER BY day
-";
-
-$result = $conn->query($sql);
-
-while($row = $result->fetch_assoc()){
-
-echo "<tr>";
-echo "<td>".$row['day']."</td>";
-echo "<td>".$row['total']."</td>";
-echo "</tr>";
-
-}
-
-?>
-
-</table>
-
-
 <hr>
-
-<!-- =========================
-     PAGE POPULARITY REPORT
-========================= -->
 
 <h2>Page Popularity Report</h2>
 
-<canvas id="pageChart"></canvas>
+<canvas id="pageChart" width="400" height="200"></canvas>
 
 <script>
 
-new Chart(document.getElementById("pageChart"),{
+new Chart(document.getElementById('pageChart'), {
 
-type:'bar',
+type: 'bar',
 
-data:{
+data: {
 labels: <?php echo json_encode($page_labels); ?>,
-datasets:[{
-label:"Events Per Page",
+datasets: [{
+label: 'Events Per Page',
 data: <?php echo json_encode($page_data); ?>
 }]
 }
@@ -175,57 +177,21 @@ data: <?php echo json_encode($page_data); ?>
 
 </script>
 
-<table border="1">
-
-<tr>
-<th>URL</th>
-<th>Events</th>
-</tr>
-
-<?php
-
-$sql = "
-SELECT url, COUNT(*) as views
-FROM events
-GROUP BY url
-ORDER BY views DESC
-";
-
-$result = $conn->query($sql);
-
-while($row = $result->fetch_assoc()){
-
-echo "<tr>";
-echo "<td>".$row['url']."</td>";
-echo "<td>".$row['views']."</td>";
-echo "</tr>";
-
-}
-
-?>
-
-</table>
-
-
 <hr>
-
-<!-- =========================
-     EVENT TYPE REPORT
-========================= -->
 
 <h2>Event Type Report</h2>
 
-<canvas id="eventChart"></canvas>
+<canvas id="eventChart" width="400" height="200"></canvas>
 
 <script>
 
-new Chart(document.getElementById("eventChart"),{
+new Chart(document.getElementById('eventChart'), {
 
-type:'pie',
+type: 'pie',
 
-data:{
+data: {
 labels: <?php echo json_encode($event_labels); ?>,
-datasets:[{
+datasets: [{
 data: <?php echo json_encode($event_data); ?>
 }]
 }
@@ -233,37 +199,6 @@ data: <?php echo json_encode($event_data); ?>
 });
 
 </script>
-
-<table border="1">
-
-<tr>
-<th>Event Type</th>
-<th>Total</th>
-</tr>
-
-<?php
-
-$sql = "
-SELECT event_type, COUNT(*) as total
-FROM events
-GROUP BY event_type
-";
-
-$result = $conn->query($sql);
-
-while($row = $result->fetch_assoc()){
-
-echo "<tr>";
-echo "<td>".$row['event_type']."</td>";
-echo "<td>".$row['total']."</td>";
-echo "</tr>";
-
-}
-
-?>
-
-</table>
-
 
 </body>
 </html>
