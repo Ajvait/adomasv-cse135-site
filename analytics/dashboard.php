@@ -4,7 +4,8 @@ require "auth.php";
 
 <h1>Analytics Dashboard</h1>
 
-<p>Welcome to the analytics dashboard.</p>
+<p>Welcome <?php echo $_SESSION['user']; ?></p>
+<p>Role: <?php echo $_SESSION['role']; ?></p>
 
 <ul>
     <li><a href="reports.php">View Raw Event Table</a></li>

@@ -1,5 +1,6 @@
 <?php
 session_start();
+require "db.php";
 
 $error = "";
 
@@ -8,16 +9,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $username = $_POST["username"];
     $password = $_POST["password"];
 
-    // Your login credentials
-    $validUser = "adomasv";
-    $validPass = "AjvUCSD@W26";
+    $query = "SELECT username, password, role FROM users WHERE username = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
 
-    if ($username === $validUser && $password === $validPass) {
+    $result = $stmt->get_result();
 
-        $_SESSION["user"] = $username;
+    if ($row = $result->fetch_assoc()) {
 
-        header("Location: dashboard.php");
-        exit();
+        if ($password === $row["password"]) {
+
+            $_SESSION["user"] = $row["username"];
+            $_SESSION["role"] = $row["role"];
+
+            header("Location: dashboard.php");
+            exit();
+
+        } else {
+            $error = "Invalid username or password.";
+        }
 
     } else {
         $error = "Invalid username or password.";
