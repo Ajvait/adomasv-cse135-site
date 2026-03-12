@@ -3,7 +3,6 @@ require "auth.php";
 requireRole(["super_admin","analyst"]);
 require "db.php";
 
-/* EVENT TYPE REPORT */
 $eventQuery = "
 SELECT event_type, COUNT(*) AS total
 FROM events
@@ -22,7 +21,6 @@ while ($row = $eventResult->fetch_assoc()) {
 }
 
 
-/* PAGE POPULARITY REPORT */
 $pageQuery = "
 SELECT url, COUNT(*) AS visits
 FROM events
@@ -42,7 +40,6 @@ while ($row = $pageResult->fetch_assoc()) {
 }
 
 
-/* SESSION ACTIVITY REPORT */
 $sessionQuery = "
 SELECT session_id, COUNT(*) AS events
 FROM events
@@ -65,8 +62,6 @@ while ($row = $sessionResult->fetch_assoc()) {
 <h1>Analytics Charts</h1>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- EVENT TYPE CHART -->
 
 <h2>Event Type Distribution</h2>
 
@@ -108,11 +103,10 @@ while ($row = $eventResult->fetch_assoc()) {
 <?php } ?>
 </table>
 
-<p><b>Analyst Comment:</b> Mouse movement events occur the most frequently because they are triggered continuously as users move their cursor across the page. Click events are fewer but represent intentional interactions with page elements.</p>
-
+<p>
+<b>Analyst Comment:</b> Mouse movement events occur most frequently because they are triggered continuously as users move their cursor across the page. Click events occur less often but represent intentional user interactions with page elements. Monitoring the ratio of mouse movement to click activity can also help identify abnormal behavior, such as automated bots that load pages but do not generate natural cursor movement.
+</p>
 <hr>
-
-<!-- PAGE POPULARITY CHART -->
 
 <h2>Page Popularity</h2>
 
@@ -157,8 +151,6 @@ while ($row = $pageResult->fetch_assoc()) {
 <p><b>Analyst Comment:</b> Pages with higher event counts indicate areas where users spend more time interacting. The homepage typically generates the most activity because users start their sessions there.</p>
 
 <hr>
-
-<!-- SESSION ACTIVITY CHART -->
 
 <h2>Session Activity</h2>
 
