@@ -112,7 +112,7 @@ The results are displayed as a pie chart showing user interaction activity colle
 
 Link to the test site: https://test.adomasvcse135.site/
 
-To access the analytics dashboard: go to https://adomasvcse135.site/ and then click Analytics dashboard login, then login using GRADER.md information.
+To access the analytics dashboard: go to https://adomasvcse135.site/ and then click Analytics Dashboard Login, then login using GRADER.md information.
 
 AI usage: I used AI to complete some parts of the assignment such as askng for help debugging my code and why some things may not work and it was very helpful with this. It was able to pinpoint 2 specific bugs that i had that were causing my page to not load properly and also gave helpful debugging suggestions in other cases where I could not ask for direct assistance(security and password concerns etc).
 
