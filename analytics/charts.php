@@ -77,7 +77,18 @@ new Chart(document.getElementById("eventChart"), {
         datasets: [{
             label: "Event Count",
             data: <?php echo json_encode($eventData); ?>,
-            backgroundColor: ["red","blue","green","orange","purple"]
+            backgroundColor: [
+                "#FF6384",
+                "#36A2EB",
+                "#FFCE56",
+                "#4BC0C0",
+                "#9966FF",
+                "#FF9F40",
+                "#8DD17E",
+                "#D65DB1",
+                "#845EC2",
+                "#2C73D2"
+            ]
         }]
     }
 
