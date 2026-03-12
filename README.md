@@ -107,3 +107,13 @@ The chart visualizes event distribution by event type using the query:
 SELECT event_type, COUNT(*) FROM events GROUP BY event_type;
 
 The results are displayed as a pie chart showing user interaction activity collected from the analytics collector script.
+
+## Homework 5
+
+Link to the test site: https://test.adomasvcse135.site/
+
+To access the analytics dashboard: go to https://adomasvcse135.site/ and then click Analytics dashboard login, then login using GRADER.md information.
+
+AI usage: I used AI to complete some parts of the assignment such as askng for help debugging my code and why some things may not work and it was very helpful with this. It was able to pinpoint 2 specific bugs that i had that were causing my page to not load properly and also gave helpful debugging suggestions in other cases where I could not ask for direct assistance(security and password concerns etc).
+
+Future: Unfortunately I was not able to put as much time into the final result project as I had initially anticipated which is mostly the fault of my own but something personal and outside of my control happened which required me to have the entire project completed by Wednesday evening to be able to submit a working version. Time permitting, I would have liked to do a better analysis of the charts that I have and while I am satisfied with my submission I think it would have been possible to be more detailed.

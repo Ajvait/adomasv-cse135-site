@@ -1,15 +1,13 @@
 # GRADER.md
 
-## Bullets 1 and 2
-
-### Login Credentials
+## Login Credentials
 | Role | Username | Password |
 |-----|------|------|
 | Super Admin | admin | admin123 |
 | Analyst | sam | sam123 |
 | Viewer | viewer | viewer123 |
 
-Suggested Grading Flow
+## Suggested Grading Flow
 
 Go to https://adomasvcse135.site/analytics/login.php and do the following:
 1. Login as viewer:viewer123
@@ -26,3 +24,8 @@ Go to https://adomasvcse135.site/analytics/login.php and do the following:
 12. Access **manage users**
 13. Delete the user test:test123
 14. Attempt to login as the user test:test123
+
+## Concerns
+I was unable to figure out how to determine whether JS was enabled on the user's end for the collector.js portion so I just set it to true since I thought it would be likely they would have JS enabled if they are able to load the page properly and continue to navigate with statistically significant  mouse movements, clicks, etc.
+
+As far as I know I have fulfilled all other requirements fully.
