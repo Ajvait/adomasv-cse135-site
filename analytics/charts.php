@@ -104,7 +104,7 @@ while ($row = $eventResult->fetch_assoc()) {
 </table>
 
 <p>
-<b>Analyst Comment:</b> Mouse movement events occur most frequently because they are triggered continuously as users move their cursor across the page. Click events occur less often but represent intentional user interactions with page elements. Monitoring the ratio of mouse movement to click activity can also help identify abnormal behavior, such as automated bots that load pages but do not generate natural cursor movement.
+<b>Analyst Comment:</b> Mouse movement events happen most frequently because they are triggered continuously as users move their cursor across the page. Click events are fewer but represent intentional interactions with page elements. This is important to note when bots are entering the page and not using mouse movements.
 </p>
 <hr>
 
